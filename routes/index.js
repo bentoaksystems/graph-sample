@@ -1,36 +1,24 @@
 var express = require('express');
 var router = express.Router();
 const config = require('../config');
-const {Test} = require('../db/models/test');
+const {PeriodIncome} = require('../db/models/PeriodIncomeBP');
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', function (req, res, next) {
 
 
+    let periodIncome = new PeriodIncome();
+    periodIncome.setIncome(1000);
+    periodIncome.setNameOfPeriod('فروردین');
+    periodIncome.setStartOfPeriod(Date.now());
+    periodIncome.setEndOfPeriod(Date.now());
+    periodIncome.save().then(() => {
 
-    let obj = {};
-
-    obj['hello'] = {
-        value: req.body['hello'],
-        docs: ['ehsan','ehsan','ehsan','ehsan']
-    };
-
-    let test = new Test(obj);
-
-    console.log(test);
-
-    test.save().then(doc => {
-        res.json({
-            error_code: 0,
-            id: doc._id
-        });
-
-
-    }).catch(err => {
-        console.error(err);
-        sendError(res, err, config.DB_ERROR);
+        console.log('successful');
 
     });
+
+    res.render('index', {title: 'Express'});
+
 
 });
 
