@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const extend = require('mongoose-schema-extend');
 let Schema = mongoose.Schema;
-let {Income, incomeSchema} = require('./IncomeBP');
+let {Income, income_schema_obj} = require('./IncomeBP');
+const {NAMES} = require('../../names');
 
 class PeriodIncome extends Income {
 
@@ -9,13 +10,14 @@ class PeriodIncome extends Income {
         super();
     }
 
-    getNameOfPeriod() {
-        return this.name;
-    }
 
-    setNameOfPeriod(name) {
+    setPeriod(name, start, end) {
+        this.periodName = name;
+        this.setACName(name);
+        this.start = start;
+        this.end = end;
 
-        this.name = name;
+        this.addTo(NAMES.profit + ' ' + name);
     }
 
     getStartOfPeriod() {
@@ -23,21 +25,9 @@ class PeriodIncome extends Income {
         return this.start;
     }
 
-    setStartOfPeriod(start) {
-
-        this.start = start;
-    }
-
-
     getEndOfPeriod() {
         return this.end;
     }
-
-    setEndOfPeriod(end) {
-
-        this.end = end;
-    }
-
 
     save() {
 
@@ -45,9 +35,12 @@ class PeriodIncome extends Income {
 
             new periodIncomeModel({
                 income: this.getIncome(),
-                name: this.getNameOfPeriod(),
+                name: this.getName(),
                 start: this.getStartOfPeriod(),
-                end: this.getEndOfPeriod()
+                end: this.getEndOfPeriod(),
+                to: this.getTo(),
+                from: this.getFrom()
+
             }).save().then(pi => {
                 console.log(pi);
                 resolve();
@@ -63,7 +56,7 @@ class PeriodIncome extends Income {
     }
 }
 
-let schema_obj = {
+let period_income_schema_obj =Object.assign({}, income_schema_obj,{
     name: {
         type: String,
         required: true,
@@ -77,12 +70,15 @@ let schema_obj = {
         required: true,
     }
 
-};
+});
 
-let periodIncomeSchema = incomeSchema.extend(schema_obj, {discriminatorKey: '_type', strict: false});
-let periodIncomeModel = mongoose.model('periodIncome', periodIncomeSchema);
+
+
+let options ={ discriminatorKey : '_type', strict: false};
+let periodIncomeSchema = new Schema(period_income_schema_obj, options);
+let periodIncomeModel = mongoose.model('PeriodIncome', periodIncomeSchema);
 
 module.exports = {
     PeriodIncome,
-    periodIncomeSchema
+    period_income_schema_obj
 };
