@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const extend = require('mongoose-schema-extend');
 let Schema = mongoose.Schema;
-let {Expenditure, expenditure_schema_obj} = require('./expenditureBP');
+let {Expenditure} = require('./expenditureBP');
+let {Nodes} = require('../bp');
 const {NAMES} = require('../../names');
 
 class PeriodExpenditure extends Expenditure {
@@ -33,7 +34,7 @@ class PeriodExpenditure extends Expenditure {
 
         return new Promise((resolve, reject) =>{
 
-            new periodExpenditureModel({
+            new bpModel({
                 expenditure: this.getExpenditure(),
                 name: this.getName(),
                 start: this.getStartOfPeriod(),
@@ -56,29 +57,6 @@ class PeriodExpenditure extends Expenditure {
     }
 }
 
-let period_expenditure_schema_obj =Object.assign({} ,expenditure_schema_obj, {
-    name: {
-        type: String,
-        required: true,
-    },
-    start: {
-        type: Date,
-        required: true,
-    },
-    end: {
-        type: Date,
-        required: true,
-    }
-
-});
-
-
-
-let options ={ discriminatorKey : '_type', strict: false};
-let periodExpenditureSchema = new Schema(period_expenditure_schema_obj, options);
-let periodExpenditureModel = mongoose.model('PeriodExpenditure', periodExpenditureSchema);
-
 module.exports = {
-    PeriodExpenditure,
-    period_expenditure_schema_obj
+    PeriodExpenditure
 };

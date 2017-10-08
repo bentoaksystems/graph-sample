@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 let Schema = mongoose.Schema;
-let {BP,bp_schema_obj } = require('../bp');
+let {BP } = require('../bp');
 const {NAMES} = require('../../names');
 
 class Profit extends BP {
@@ -20,29 +20,13 @@ class Profit extends BP {
 
         super.evaluate();
 
-        this.setProfit( )
+        this.setProfit();
 
     }
 
 
 }
 
-let profit_schema_obj =Object.assign({} ,bp_schema_obj, {
-
-    profit: {
-        type: Number,
-        required: true,
-    }
-
-});
-
-
-let options ={ discriminatorKey : '_type', strict: false};
-let profitSchema = new Schema(profit_schema_obj, options);
-let profitModel = mongoose.model('profit', profitSchema);
-
-
 module.exports = {
-    Profit,
-    profit_schema_obj
+    Profit
 };

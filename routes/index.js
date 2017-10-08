@@ -14,14 +14,13 @@ router.get('/', function (req, res, next) {
     periodIncome.setPeriod(NAMES.Farvardin, Date.now(), Date.now());
 
     periodIncome.evaluate();
+    periodIncome.save().then(() => {
 
-    // periodIncome.save().then(() => {
+        console.log('successful');
+
+    });
+
     //
-    //     console.log('successful');
-    //
-    // });
-
-
     // let periodExpenditure = new PeriodExpenditure();
     // periodExpenditure.setExpenditure(1000);
     // periodExpenditure.setPeriod(NAMES.Farvardin, Date.now(), Date.now());

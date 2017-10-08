@@ -44,37 +44,54 @@ class BP {
     }
 
     evaluate() {
+
     }
+
 
     getValueByKeys(keys) {
 
+        return new Promise((resolve, reject) => {
+            Nodes.findOne({name: keys[0]}).then(node => {
+
+                if (!node)
+                    reject();
+
+                if (keys[1])
+                    resolve(node[keys[1]]);
+                else
+                    resolve(node);
 
 
-    }
+            });
+
+        });
 
 
+    };
 }
 
-let bp_schema_obj = {
 
-    to: {
-        type: [String],
-        required: false,
-    },
-    from: {
-        type: [String],
-        required: false,
-    }
+let
+    bp_schema_obj = {
+
+        to: {
+            type: [String],
+            required: false,
+        },
+        from: {
+            type: [String],
+            required: false,
+        }
 
 
-};
+    };
 
 
-let options = {discriminatorKey: '_type', strict: false};
+let options = {strict: false};
 let bpSchema = new Schema(bp_schema_obj, options);
-let bpModel = mongoose.model('BP', bpSchema);
+let Nodes = mongoose.model('Nodes', bpSchema);
 
 module.exports = {
     BP,
-    bp_schema_obj,
+    Nodes
 };

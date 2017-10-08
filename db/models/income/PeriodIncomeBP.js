@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const extend = require('mongoose-schema-extend');
 let Schema = mongoose.Schema;
-let {Income, income_schema_obj} = require('./IncomeBP');
+let {Income} = require('./IncomeBP');
+let {Nodes} = require('../bp');
 const {NAMES} = require('../../names');
 
 class PeriodIncome extends Income {
@@ -33,7 +34,7 @@ class PeriodIncome extends Income {
 
         return new Promise((resolve, reject) =>{
 
-            new periodIncomeModel({
+            new bpModel({
                 income: this.getIncome(),
                 name: this.getName(),
                 start: this.getStartOfPeriod(),
@@ -56,29 +57,6 @@ class PeriodIncome extends Income {
     }
 }
 
-let period_income_schema_obj =Object.assign({}, income_schema_obj,{
-    name: {
-        type: String,
-        required: true,
-    },
-    start: {
-        type: Date,
-        required: true,
-    },
-    end: {
-        type: Date,
-        required: true,
-    }
-
-});
-
-
-
-let options ={ discriminatorKey : '_type', strict: false};
-let periodIncomeSchema = new Schema(period_income_schema_obj, options);
-let periodIncomeModel = mongoose.model('PeriodIncome', periodIncomeSchema);
-
 module.exports = {
-    PeriodIncome,
-    period_income_schema_obj
+    PeriodIncome
 };
