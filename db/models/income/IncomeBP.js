@@ -9,11 +9,8 @@ class Income extends BP {
         super();
         this.setACName(NAMES.income)
     }
-    getIncome(){
-        return this.income;
-    }
-    setIncome(value) {
-        this.income = value;
+    setValue(value) {
+        super.setValue(value)
     }
 
 }

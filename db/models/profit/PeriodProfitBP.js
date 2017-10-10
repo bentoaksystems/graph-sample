@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const extend = require('mongoose-schema-extend');
 let Schema = mongoose.Schema;
 let {Profit} = require('./ProfitBP');
-let {Nodes} = require('../bp');
 const {NAMES} = require('../../names');
 
 class PeriodProfit extends Profit {
@@ -18,7 +17,10 @@ class PeriodProfit extends Profit {
         this.start = start;
         this.end = end;
 
-        this.addFrom([NAMES.income + ' ' + name, NAMES.expenditure + ' ' + name])
+        let related_node_names = [NAMES.income + ' ' + name, NAMES.expenditure + ' ' + name];
+
+        this.addFrom(related_node_names);
+
     }
 
     getStartOfPeriod() {
@@ -30,34 +32,21 @@ class PeriodProfit extends Profit {
         return this.end;
     }
 
-    evaluate(){
-        super.evaluate();
+    evaluate() {
+
+        return new Promise((resolve, reject) => {
+
+            super.evaluate().then(res => {
+                resolve(res);
+            }).catch(err => reject(err));
+
+        });
+
 
     }
 
 
     save() {
-
-        return new Promise((resolve, reject) => {
-
-            new bpModel({
-                profit: this.getProfit(),
-                name: this.getName(),
-                start: this.getStartOfPeriod(),
-                end: this.getEndOfPeriod(),
-                to: this.getTo(),
-                from: this.getFrom()
-            }).save().then(pi => {
-                console.log(pi);
-                resolve();
-
-            }).catch(err => {
-                console.error(err);
-                reject();
-            });
-
-
-        });
 
     }
 }

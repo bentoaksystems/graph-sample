@@ -1,18 +1,27 @@
-const mongoose = require('mongoose');
-let Schema = mongoose.Schema;
-
 /**
  * BP stands for blue print
  */
+
+let graphHandler = require('../../GraphHandler');
+let db = require('../index');
+
 class BP {
 
-
-    constructor() { //class constructor
+    /**
+     *
+     * @param obj is palin object which is needed to be casted on BP class
+     */
+    constructor(obj = null) {
 
         this.from = [];
         this.to = [];
 
         this.name = '';
+        this.value = 0;
+
+
+        if (obj)
+            obj && Object.assign(this, obj);
     }
 
     /**
@@ -20,7 +29,7 @@ class BP {
      * @param key : key to add to previous name
      */
     setACName(key) {
-        (this.name += (' ' + key)).trim();
+        this.name = (this.name + (' ' + key)).trim();
     }
 
     getName() {
@@ -43,55 +52,52 @@ class BP {
         return this.from;
     }
 
+    getValue() {
+        return this.value;
+    }
+
+    setValue(value) {
+        this.value = value;
+        graphHandler.updateGraph(this.name, 'value', this.value);
+
+        if (this.to.length > 0) {
+
+            graphHandler.getNodesFromLoadedGraph(this.to).forEach(n => {
+                n.evaluate();
+            })
+        }
+
+    }
+
     evaluate() {
+
+        let currentObject = this;
+        return new Promise((resolve, reject) => {
+
+            if (currentObject.name && !graphHandler.nodeExistsOnLoadedGraph(currentObject.name))
+                graphHandler.addToGraph([currentObject]);
+
+            resolve();
+        });
+    }
+
+    save() {
+
+        let current_object = this;
+        return new Promise((resolve, reject) => {
+            let query = {'name': current_object.name};
+            db.nodes.findOneAndUpdate(query, current_object, {upsert: true}, function (err, doc) {
+                if (err) reject();
+                resolve();
+            });
+        });
 
     }
 
 
-    getValueByKeys(keys) {
-
-        return new Promise((resolve, reject) => {
-            Nodes.findOne({name: keys[0]}).then(node => {
-
-                if (!node)
-                    reject();
-
-                if (keys[1])
-                    resolve(node[keys[1]]);
-                else
-                    resolve(node);
-
-
-            });
-
-        });
-
-
-    };
 }
 
 
-let
-    bp_schema_obj = {
-
-        to: {
-            type: [String],
-            required: false,
-        },
-        from: {
-            type: [String],
-            required: false,
-        }
-
-
-    };
-
-
-let options = {strict: false};
-let bpSchema = new Schema(bp_schema_obj, options);
-let Nodes = mongoose.model('Nodes', bpSchema);
-
 module.exports = {
-    BP,
-    Nodes
+    BP
 };

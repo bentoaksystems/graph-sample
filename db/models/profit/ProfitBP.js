@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 let Schema = mongoose.Schema;
-let {BP } = require('../bp');
+let {BP} = require('../bp');
 const {NAMES} = require('../../names');
+let db = require('../../index');
+let imGraph = require('../../../GraphHandler');
+
 
 class Profit extends BP {
 
@@ -9,22 +12,38 @@ class Profit extends BP {
         super();
         this.setACName(NAMES.profit)
     }
-    getProfit(){
-        return this.profit;
+
+    evaluate() {
+
+
+        let currentObject = this;
+        return new Promise((resolve, reject) => {
+
+            /*
+            Here formula of calculated node must be implemented
+             */
+            function calculate(nodes) {
+                currentObject.value = 0;
+                nodes.forEach(node => {
+                    currentObject.value += +node.value;
+                });
+            }
+
+            calculate(imGraph.getNodesFromLoadedGraph(this.getFrom()));
+
+            // this.getNodesByKeysFromMongo(this.getFrom()).then(nodes => {
+            //
+            //     resolve(this);
+            //
+            // });
+
+            super.evaluate().then(res => {
+                resolve(this);
+            }).catch(err => reject(err));
+
+        });
+
     }
-    setProfit(value) {
-        this.profit = value;
-    }
-
-    evaluate(){
-
-        super.evaluate();
-
-        this.setProfit();
-
-    }
-
-
 }
 
 module.exports = {

@@ -9,11 +9,8 @@ class Expenditure extends BP {
         super();
         this.setACName(NAMES.expenditure)
     }
-    getExpenditure(){
-        return this.expenditure;
-    }
-    setExpenditure(value) {
-        this.expenditure = value;
+    setValue(value) {
+        super.setValue(value);
     }
 
 }
